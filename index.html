@@ -1,1 +1,431 @@
-"hello!"
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physics Quiz ♡</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --blue: #6d9fd6;
+    --dark: #31577e;
+    --light: #eaf4ff;
+    --pale: #f5f9ff;
+    --white: #ffffff;
+    --accent: #b5d7f5;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #e8f3ff, #f7faff, #dcecff);
+    color: var(--dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 16px;
+}
+
+.container {
+    width: 100%;
+    max-width: 650px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.icon {
+    font-size: 42px;
+    margin-bottom: 8px;
+}
+
+h1 {
+    font-size: 34px;
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.subtitle {
+    color: #819bb8;
+    margin-top: 7px;
+    font-size: 14px;
+}
+
+.card {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid #dceafb;
+    border-radius: 25px;
+    padding: 32px;
+    box-shadow: 0 12px 35px rgba(75, 120, 170, 0.10);
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #8aa9ca;
+}
+
+.progress {
+    width: 100%;
+    height: 8px;
+    background: var(--light);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 28px;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--blue);
+    border-radius: 20px;
+    transition: width 0.3s;
+}
+
+.category {
+    display: inline-block;
+    background: #e8f2ff;
+    color: #6391c2;
+    padding: 6px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 21px;
+    line-height: 1.5;
+    margin: 0 0 23px;
+}
+
+.answers {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.answer {
+    width: 100%;
+    border: 2px solid #e3eefb;
+    background: #f8fbff;
+    padding: 15px 18px;
+    border-radius: 15px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    color: #52769d;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.answer:hover:not(:disabled) {
+    border-color: #8cb8e5;
+    background: #edf6ff;
+    transform: translateY(-2px);
+}
+
+.answer.correct {
+    background: #e5f6ed;
+    border-color: #8bc9a7;
+    color: #418260;
+}
+
+.answer.wrong {
+    background: #fff0f1;
+    border-color: #e9a5ad;
+    color: #b96c78;
+}
+
+.feedback {
+    min-height: 30px;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.next {
+    display: none;
+    width: 100%;
+    border: none;
+    padding: 15px;
+    border-radius: 15px;
+    background: var(--blue);
+    color: white;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: 0.2s;
+}
+
+.next:hover {
+    background: #5489c2;
+    transform: translateY(-2px);
+}
+
+.result {
+    text-align: center;
+    display: none;
+}
+
+.result .emoji {
+    font-size: 55px;
+    margin-bottom: 15px;
+}
+
+.result h2 {
+    font-size: 27px;
+}
+
+.result p {
+    color: #819bb8;
+}
+
+.restart {
+    margin-top: 20px;
+    display: block;
+}
+
+footer {
+    text-align: center;
+    margin-top: 22px;
+    color: #9bb2cb;
+    font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <div class="icon">⚛️</div>
+    <h1>Physics Quiz</h1>
+    <div class="subtitle">maturitní příprava · one question at a time ♡</div>
+</header>
+
+<div class="card">
+
+    <div id="quiz">
+        <div class="top">
+            <span id="questionNumber">OTÁZKA 1 / 5</span>
+            <span id="score">★ 0 bodů</span>
+        </div>
+
+        <div class="progress">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <span class="category" id="category">MECHANIKA</span>
+        <h2 id="question"></h2>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="feedback" id="feedback"></div>
+
+        <button class="next" id="next" onclick="nextQuestion()">
+            Další otázka →
+        </button>
+    </div>
+
+    <div class="result" id="result">
+        <div class="emoji">🎓</div>
+        <h2>Hotovo!</h2>
+        <p id="resultText"></p>
+        <p id="resultMessage"></p>
+        <button class="next restart" onclick="restartQuiz()">
+            Zkusit znovu ↻
+        </button>
+    </div>
+
+</div>
+
+<footer>
+    made for future physics graduates ♡
+</footer>
+
+</div>
+
+<script>
+const questions = [
+    {
+        category: "MECHANIKA",
+        question: "Jaká je jednotka síly v soustavě SI?",
+        answers: ["Joule (J)", "Newton (N)", "Watt (W)", "Pascal (Pa)"],
+        correct: 1,
+        explanation: "Síla se měří v newtonech (N)."
+    },
+    {
+        category: "ELEKTŘINA",
+        question: "Jaký vztah vyjadřuje Ohmův zákon?",
+        answers: ["U = R · I", "P = U · I", "F = m · a", "W = F · s"],
+        correct: 0,
+        explanation: "Ohmův zákon: napětí = odpor × proud."
+    },
+    {
+        category: "TERMODYNAMIKA",
+        question: "Jaká je přibližná hodnota absolutní nuly ve stupních Celsia?",
+        answers: ["0 °C", "-100 °C", "-273,15 °C", "-373,15 °C"],
+        correct: 2,
+        explanation: "Absolutní nula odpovídá 0 K, tedy −273,15 °C."
+    },
+    {
+        category: "VLNĚNÍ",
+        question: "Jaká je rychlost světla ve vakuu?",
+        answers: [
+            "300 000 km/s",
+            "150 000 km/s",
+            "30 000 km/s",
+            "3 000 km/s"
+        ],
+        correct: 0,
+        explanation: "Rychlost světla ve vakuu je přibližně 3 × 10⁸ m/s."
+    },
+    {
+        category: "OPTIKA",
+        question: "Jak se nazývá změna směru světla při přechodu mezi prostředími?",
+        answers: ["Odraz", "Difrakce", "Interference", "Lom"],
+        correct: 3,
+        explanation: "Jde o lom světla (refrakci)."
+    }
+];
+
+let current = 0;
+let points = 0;
+let answered = false;
+
+function loadQuestion() {
+    answered = false;
+
+    const q = questions[current];
+
+    document.getElementById("questionNumber").textContent =
+        `OTÁZKA ${current + 1} / ${questions.length}`;
+
+    document.getElementById("score").textContent =
+        `★ ${points} bodů`;
+
+    document.getElementById("progress").style.width =
+        `${(current / questions.length) * 100}%`;
+
+    document.getElementById("category").textContent = q.category;
+    document.getElementById("question").textContent = q.question;
+    document.getElementById("feedback").textContent = "";
+    document.getElementById("next").style.display = "none";
+
+    const answers = document.getElementById("answers");
+    answers.innerHTML = "";
+
+    q.answers.forEach((answer, index) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.textContent = `${String.fromCharCode(65 + index)}. ${answer}`;
+        button.onclick = () => selectAnswer(index);
+        answers.appendChild(button);
+    });
+}
+
+function selectAnswer(index) {
+    if (answered) return;
+    answered = true;
+
+    const q = questions[current];
+    const buttons = document.querySelectorAll(".answer");
+
+    buttons.forEach((button, i) => {
+        button.disabled = true;
+
+        if (i === q.correct) {
+            button.classList.add("correct");
+        } else if (i === index) {
+            button.classList.add("wrong");
+        }
+    });
+
+    const feedback = document.getElementById("feedback");
+
+    if (index === q.correct) {
+        points++;
+        feedback.textContent = "✓ Správně! " + q.explanation;
+        feedback.style.color = "#559875";
+    } else {
+        feedback.textContent = "♡ Ne tak docela. " + q.explanation;
+        feedback.style.color = "#b96c78";
+    }
+
+    document.getElementById("score").textContent =
+        `★ ${points} bodů`;
+
+    const next = document.getElementById("next");
+    next.style.display = "block";
+    next.textContent = current === questions.length - 1
+        ? "Zobrazit výsledek ♡"
+        : "Další otázka →";
+}
+
+function nextQuestion() {
+    current++;
+
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult() {
+    document.getElementById("quiz").style.display = "none";
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("progress").style.width = "100%";
+
+    document.getElementById("resultText").textContent =
+        `Získala jsi ${points} z ${questions.length} bodů!`;
+
+    let message;
+
+    if (points === 5) {
+        message = "Perfektní výsledek! Physics genius ✨";
+    } else if (points >= 3) {
+        message = "Pěkná práce! Ještě trochu procvičování.";
+    } else {
+        message = "Nevadí! Každá otázka je příležitost se něco naučit.";
+    }
+
+    document.getElementById("resultMessage").textContent = message;
+}
+
+function restartQuiz() {
+    current = 0;
+    points = 0;
+
+    document.getElementById("quiz").style.display = "block";
+    document.getElementById("result").style.display = "none";
+
+    loadQuestion();
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
